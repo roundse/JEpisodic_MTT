@@ -66,7 +66,7 @@ is_learning = 1;
 
 % PFC AREA
 global PFC_SIZE;
-PFC_SIZE = 250;
+PFC_SIZE = 4;
 
 global w_food_to_pfc;
 global w_place_to_pfc;
@@ -85,9 +85,9 @@ global pfc_responses_to_place;
 pfc_in_queue = {};
 pfc_weight_queue = {};
 
-w_food_to_pfc = .01 .* (rand(FOOD_CELLS, PFC_SIZE) < EXT_CONNECT);
+w_food_to_pfc = .3 .* ones(FOOD_CELLS, PFC_SIZE);
 w_pfc_to_food = w_food_to_pfc';
-w_place_to_pfc = .01 .* (rand(PLACE_CELLS, PFC_SIZE) < EXT_CONNECT);
+w_place_to_pfc = .3 .* ones(PLACE_CELLS, PFC_SIZE);
 w_pfc_to_place = w_place_to_pfc';
 
 global w_pfc_to_place_init;
@@ -262,8 +262,8 @@ function [worm_trial pean_trial] = ...
     global hpc_learning;
     global pfc_learning;
     
-    global hpc_cur_decay;
-    hpc_cur_decay = 0;
+    global pfc_cur_decay;
+    pfc_cur_decay = 0;
 
     hpc_learning = 0;
     pfc_learning = 0;

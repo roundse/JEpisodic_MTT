@@ -14,7 +14,7 @@ global pfc_max;
 global hpc_max;
 global max_max_weight;
 
-global hpc_cur_decay;
+global pfc_cur_decay;
 
 alpha = 5;
 alpha = sqrt(alpha);
@@ -22,15 +22,16 @@ max = max_max_weight;
 
 if is_pfc
     eta = pfc_learning_rate;
-    decay = .000000001;
+    %decay = .000000001;
+    pfc_cur_decay = pfc_cur_decay + 0.00002;
+    if pfc_cur_decay > 1
+       disp('HPC DECAY TOO LARGE!!!!!!!!!!!!!!!!!!'); 
+    end
+    decay = pfc_cur_decay;
     max = pfc_max;
 else
     eta = learning_rate;
-    hpc_cur_decay = hpc_cur_decay + 0.00002;
-    if hpc_cur_decay > 1
-       disp('HPC DECAY TOO LARGE!!!!!!!!!!!!!!!!!!'); 
-    end
-    decay = hpc_cur_decay;
+    decay = 0;
     max = hpc_max;
 end
 
