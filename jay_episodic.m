@@ -37,8 +37,8 @@ global PILF;
 global DEGR;
 
 %      Worm   Peanut
-REPL = [ 6.4   2.0];
-PILF = [ 3.25  2.0];
+REPL = [ 7.0   2.0];
+PILF = [ 0.0   2.0];
 DEGR = [-9.0   2.0]; % O X
 
 gain_oja = 0.7;
@@ -68,7 +68,7 @@ value_groups = {};
 
 multi_groups = {};
 
-is_disp_weights = 0;
+is_disp_weights = 1;
 % profile on
 for e=1:1
     v = 1;
