@@ -227,11 +227,11 @@ function [worm_trial pean_trial] = ...
     global PVAL;
     global HVAL;
 
-    if VALUE == 1
+    if VALUE == 2
         value = DEGR;
         disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
-    elseif VALUE == 2
+    elseif VALUE == 3
         value = REPL;
         disp('REPLENISH TRIAL~~~~~~~~~~~~~~~~~~~~~~~~');
 
@@ -377,9 +377,9 @@ function [worm_trial pean_trial] = ...
                 is_replenish = current_time == 4;
             end
             
-            if value == PILF
-                is_replenish = 0;
-            end
+%             if value == PILF
+%                 is_replenish = 0;
+%             end
 
             if is_replenish
                 val = REPL;
