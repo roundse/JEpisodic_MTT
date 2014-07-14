@@ -240,19 +240,6 @@ function [worm_trial pean_trial] = ...
         disp('PILFER TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~~');
     end
 
-%     if VALUE == 1
-%         value = REPL;
-%         %disp('REPLENISH TRIAL~~~~~~~~~~~~~~~~~~~~~~~~');
-% 
-%     elseif VALUE == 2
-%         value = DEGR;
-%         %disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
-% 
-%     else
-%         value = PILF;
-%         %disp('PILFER TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-%     end
-
     global place;
     global hpc_cumul_activity;
     global pfc_cumul_activity;
@@ -530,7 +517,7 @@ function [worm_trial pean_trial] = ...
     end
 
 	if ~is_testing
-        rein_dur = 2;
+        rein_dur = 6;
         
         if value == DEGR
             short_values = [REPL; REPL];
