@@ -45,7 +45,6 @@ gain_oja = 0.7;
 learning_rate = .183;
 pfc_learning_rate = .183;
 
-
 global pos
 global DIR;
 global TRIAL_DIR;
