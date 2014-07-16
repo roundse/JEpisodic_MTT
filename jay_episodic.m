@@ -28,7 +28,7 @@ INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 10;
+runs = 20;
 cycles = 9;
 % cycles = 8;
 
@@ -43,7 +43,7 @@ DEGR = [-3.0   1.0];
 
 gain_oja = 0.7;
 learning_rate = .23;
-pfc_learning_rate = .28;
+pfc_learning_rate = .286;
 
 
 global pos
