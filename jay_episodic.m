@@ -28,7 +28,7 @@ INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 20;
+runs = 10;
 cycles = 9;
 % cycles = 8;
 
@@ -39,11 +39,11 @@ global DEGR;
 %      Worm   Peanut
 REPL = [ 6.0   1.0];
 PILF = [ 0.0   1.0];
-DEGR = [-3.0   1.0];
+DEGR = [-3.0   1.0]; % O X
 
 gain_oja = 0.7;
-learning_rate = .23;
-pfc_learning_rate = .286;
+learning_rate = 0.26;
+pfc_learning_rate = 0.26;
 
 
 global pos
@@ -70,7 +70,6 @@ multi_groups = {};
 
 is_disp_weights = 0;
 % profile on
-
 for e=1:1
     v = 1;
     while v  <= 3
@@ -108,8 +107,8 @@ for e=1:1
             all_side_pref = [w_place_stats p_place_stats];
             all_checks = [w_place_stats p_place_stats];
             
-            save(trial_file_name, 'all_checks');
-            save(pref_file_name, 'all_side_pref');
+           save(trial_file_name, 'all_checks');
+           save(pref_file_name, 'all_side_pref');
             
         end
         
