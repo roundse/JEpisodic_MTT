@@ -85,9 +85,9 @@ global pfc_responses_to_place;
 pfc_in_queue = {};
 pfc_weight_queue = {};
 
-w_food_to_pfc = .3 .* ones(FOOD_CELLS, PFC_SIZE);
+w_food_to_pfc = .16 .* ones(FOOD_CELLS, PFC_SIZE);
 w_pfc_to_food = w_food_to_pfc';
-w_place_to_pfc = .3 .* ones(PLACE_CELLS, PFC_SIZE);
+w_place_to_pfc = .16 .* ones(PLACE_CELLS, PFC_SIZE);
 w_pfc_to_place = w_place_to_pfc';
 
 global w_pfc_to_place_init;
@@ -118,9 +118,9 @@ food_weight_queue = {};
 w_food_in = eye(FOOD_CELLS);
 w_food_to_food = zeros(FOOD_CELLS);
 
-w_food_to_hpc = 0.5 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_food_to_hpc = 0.4 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_food = - w_food_to_hpc';
-w_place_to_hpc = 0.5 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_place_to_hpc = 0.4 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_place =  - w_place_to_hpc';
 
 
@@ -227,11 +227,11 @@ function [worm_trial pean_trial] = ...
     global PVAL;
     global HVAL;
 
-    if VALUE == 1
+    if VALUE == 2
         value = DEGR;
         disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
-    elseif VALUE == 2
+    elseif VALUE == 3
         value = REPL;
         disp('REPLENISH TRIAL~~~~~~~~~~~~~~~~~~~~~~~~');
 
