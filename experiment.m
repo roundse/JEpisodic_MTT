@@ -253,6 +253,12 @@ function [worm_trial pean_trial] = ...
 %         %disp('PILFER TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~~');
 %     end
 
+    global is_place_stim;
+    global is_food_stim;
+
+    is_place_stim = 0;
+    is_food_stim = 0;
+    
     global place;
     global hpc_cumul_activity;
     global pfc_cumul_activity;
@@ -349,7 +355,8 @@ function [worm_trial pean_trial] = ...
             end
            
             val = 1;
-
+            is_place_stim = 1;
+            
             for i = spots
                 while place(i,:) == 0
                     place(i,:) = current_type;
@@ -357,7 +364,7 @@ function [worm_trial pean_trial] = ...
 
                 cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, val);
             end
-            
+            is_place_stim = 0;
             % consolidate
 %             spots = spot_shuffler(14);
 
@@ -392,6 +399,7 @@ function [worm_trial pean_trial] = ...
 
             hpc_cumul_activity = 0;
             pfc_cumul_activity = 0;
+            is_place_stim = 1;
             
             for q = 1:current_time
                 hpc_learning = 1;
@@ -409,8 +417,10 @@ function [worm_trial pean_trial] = ...
                 else
                     spots = spot_shuffler(1,14);
                 end
-      
+                
+                in_decay = 1;
                 for i = spots
+                    in_decay = in_decay * 0.9;
                     if i < 8
                         v = val(worm);
                     else
@@ -420,14 +430,14 @@ function [worm_trial pean_trial] = ...
                     PVAL = v;
                     HVAL = v;
                         
-                    cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, v);
+                    cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, ... v);
+                        v*in_decay);
                 end
+                is_place_stim = 1;
 
             end
             hpc_learning = 0;
             
-            show_weights([prot_type, ' ', num2str(current_time)], is_disp_weights);
-
             %%disp('Current value is:');
             %disp(val);
             
@@ -450,7 +460,9 @@ function [worm_trial pean_trial] = ...
         if is_testing
             [checked_places, side_pref, avg_checks, first_checked] ...
                  = place_slot_check;
-            
+
+            show_weights([prot_type, ' ', num2str(current_time)], is_disp_weights);
+             
             if is_replenish
                 if value == DEGR
                     expected = 6;
@@ -503,7 +515,10 @@ function [worm_trial pean_trial] = ...
             val = value;
         end
 
-        for q = 1:3
+        is_place_stim = 1;
+        is_food_stim = 1;
+        
+        for q = 1:8
 %           hpc_learning = 1;
             if ~is_testing
                 pfc_learning = 1;
@@ -526,13 +541,16 @@ function [worm_trial pean_trial] = ...
 
             pfc_learning = 0;
             hpc_learning = 0;
-        end       
+        end
+        
+        is_place_stim = 0;
+        is_food_stim = 0;
     end
 
 	if ~is_testing
         rein_dur = 2;
         
-        if value == DEGR
+        if value == DEGR | value == PILF
             short_values = [REPL; REPL];
         else
             short_values = [value; value];

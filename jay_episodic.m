@@ -28,7 +28,7 @@ INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 20;
+runs = 50;
 cycles = 9;
 % cycles = 8;
 
@@ -43,7 +43,7 @@ DEGR = [-3.0   1.0]; % O X
 
 gain_oja = 0.7;
 learning_rate = 0.221;
-pfc_learning_rate = 0.1515;
+pfc_learning_rate = 0.1415;
 
 
 global pos
@@ -100,7 +100,7 @@ for e=1:1
             p_first_checkeds(i) = pean_trial.('first_check');
             p_pref_error(i) = pean_trial.('error_pref');
             
-            is_disp_weights = false;
+%             is_disp_weights = 0;
             message = horzcat('trial ', num2str(i), ' complete');
             disp(message);
             

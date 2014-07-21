@@ -69,43 +69,43 @@ if is_disp_weights
     colorbar();
     drawnow;
 
-    figure;
-    hist(pfc);
-    title(horzcat(section, ' HPC cumulative inputs'));
-    drawnow;
-
-    figure;
-    hist(place_region);
-    title(horzcat(section, ' Place cumulative inputs'));
-    drawnow;
-
-    figure;
-    hist(food);
-    title(horzcat(section, ' Food cumulative inputs'));
-    drawnow;
+%     figure;
+%     hist(pfc);
+%     title(horzcat(section, ' HPC cumulative inputs'));
+%     drawnow;
+% 
+%     figure;
+%     hist(place_region);
+%     title(horzcat(section, ' Place cumulative inputs'));
+%     drawnow;
+% 
+%     figure;
+%     hist(food);
+%     title(horzcat(section, ' Food cumulative inputs'));
+%     drawnow;
 
     global pfc_responses_to_place;
 
     if pfc_responses_to_place
         
-        if (sum(var(pfc_responses_to_place)) < 4)
-           variance = var(pfc_responses_to_place)
-           error('bland outputs...'); 
-        end
-        figure;
-        subplot(1,2,1);
-        hist(pfc_responses_to_place);
-        title(horzcat(section, ' HPC responses to place slots and food'));
-        subplot(1,2,2);
-        imagesc(pfc_responses_to_place);
-        colorbar();
-        drawnow;
-
-        figure;
-        title(horzcat(section, ' HPC responses above mean'));
-        imagesc(pfc_responses_to_place>mean(mean(pfc_responses_to_place')));
-        colorbar();
-        drawnow;
+%         if (sum(var(pfc_responses_to_place)) < 4)
+%            variance = var(pfc_responses_to_place)
+%            error('bland outputs...'); 
+%         end
+%         figure;
+%         subplot(1,2,1);
+%         hist(pfc_responses_to_place);
+%         title(horzcat(section, ' HPC responses to place slots and food'));
+%         subplot(1,2,2);
+%         imagesc(pfc_responses_to_place);
+%         colorbar();
+%         drawnow;
+% 
+%         figure;
+%         title(horzcat(section, ' HPC responses above mean'));
+%         imagesc(pfc_responses_to_place>mean(mean(pfc_responses_to_place')));
+%         colorbar();
+%         drawnow;
     end
 end
 
