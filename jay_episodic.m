@@ -43,7 +43,7 @@ DEGR = [-3.0   1.0]; % O X
 
 gain_oja = 0.7;
 learning_rate = 0.221;
-pfc_learning_rate = 0.1415;
+pfc_learning_rate = 0.18;
 
 
 global pos
