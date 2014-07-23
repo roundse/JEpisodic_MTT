@@ -418,9 +418,9 @@ function [worm_trial pean_trial] = ...
                     spots = spot_shuffler(1,14);
                 end
                 
-                in_decay = 1;
+               % in_decay = 1;
                 for i = spots
-                    in_decay = in_decay * 0.9;
+                    %in_decay = in_decay * 0.9;
                     if i < 8
                         v = val(worm);
                     else
@@ -431,7 +431,7 @@ function [worm_trial pean_trial] = ...
                     HVAL = v;
                         
                     cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, ... v);
-                        v*in_decay);
+                       % v*in_decay);
                 end
                 is_place_stim = 1;
 
