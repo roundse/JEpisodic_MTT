@@ -13,7 +13,7 @@ global learning_rate;
 global gain_oja;
 global INP_STR;
 global cycles;
-
+  
 global pfc_learning_rate;
 
 global pfc_max;
@@ -28,7 +28,7 @@ INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 50;
+runs = 10;
 cycles = 9;
 % cycles = 8;
 
@@ -37,16 +37,16 @@ global PILF;
 global DEGR;
 
 %      Worm   Peanut
-REPL = [ 6.0   1.0];
-PILF = [ 0.0   1.0];
-DEGR = [-3.0   1.0]; % O X
+REPL = [ 6.0   2.0];
+PILF = [ 0.0   2.0];
+DEGR = [-4.0   2.0];
 
-gain_oja = 0.7;
-learning_rate = 0.221;
-pfc_learning_rate = 0.18;
+gain_oja = 0.7; 
+learning_rate = 0.5;
+pfc_learning_rate = 0.45;
 
 
-global pos
+global pos;
 global DIR;
 global TRIAL_DIR;
 DIR = datestr(now);

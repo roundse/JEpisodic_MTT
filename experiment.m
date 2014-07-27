@@ -123,7 +123,6 @@ w_hpc_to_food = - w_food_to_hpc';
 w_place_to_hpc = 0.4 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_place =  - w_place_to_hpc';
 
-
 global w_hpc_to_place_init;
 global w_place_to_hpc_init;
 
@@ -227,11 +226,11 @@ function [worm_trial pean_trial] = ...
     global PVAL;
     global HVAL;
 
-    if VALUE == 1
+    if VALUE == 2
         value = DEGR;
         disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
-    elseif VALUE == 2
+    elseif VALUE == 3
         value = REPL;
         disp('REPLENISH TRIAL~~~~~~~~~~~~~~~~~~~~~~~~');
 
@@ -353,18 +352,25 @@ function [worm_trial pean_trial] = ...
                     spots = horzcat(spot_shuffler(8,14), spot_shuffler(7));
                 end   
             end
-           
-            val = 1;
+
+            
             is_place_stim = 1;
+            is_food_stim = 1;
             
             for i = spots
                 while place(i,:) == 0
                     place(i,:) = current_type;
                 end
+                if i < 8
+                    v = REPL(worm);
+                else
+                    v = REPL(peanut);
+                end
 
-                cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, val);
+                cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
             end
             is_place_stim = 0;
+            is_food_stim = 0;
             % consolidate
 %             spots = spot_shuffler(14);
 
@@ -416,6 +422,10 @@ function [worm_trial pean_trial] = ...
                    end
                 else
                     spots = spot_shuffler(1,14);
+                end
+                
+                if q == 4
+                    is_place_stim = 0;
                 end
                 
                % in_decay = 1;
@@ -509,6 +519,8 @@ function [worm_trial pean_trial] = ...
             %type_order = [type_order(2) type_order(1)];
         end
         
+        
+%       collection of food, presentation of value
         if is_replenish
             val = REPL;
         else
@@ -517,16 +529,15 @@ function [worm_trial pean_trial] = ...
 
         is_place_stim = 1;
         is_food_stim = 1;
+        hpc_learning = 1;
+        if ~is_testing
+            pfc_learning = 1;
+        end
         
-        for q = 1:1
-%           hpc_learning = 1;
-            if ~is_testing
-                pfc_learning = 1;
-            end
-
+        for q = 1:4
             % jay considers input given
             spots = spot_shuffler(14);
-            
+
             for i = spots
                 if i < 8
                     v = val(worm);
@@ -538,23 +549,21 @@ function [worm_trial pean_trial] = ...
 
                 cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, v);
             end
-
-            pfc_learning = 0;
-            hpc_learning = 0;
         end
-        
+        pfc_learning = 0;
+        hpc_learning = 0;
         is_place_stim = 0;
         is_food_stim = 0;
     end
 
 	if ~is_testing
-        rein_dur = 6;
+        rein_dur = 8;
         
-        if value == DEGR | value == PILF
-            short_values = [REPL; REPL];
-        else
-            short_values = [value; value];
-        end
+%         if value == DEGR | value == PILF
+%             short_values = [REPL; REPL];
+%         else
+%             short_values = [value; value];
+%         end
         
         pfc_learning = 1;
         hpc_learning = 1;        
@@ -562,20 +571,20 @@ function [worm_trial pean_trial] = ...
             val_order = randperm(2); 
  
             for q = 1:2
-
-                val = short_values(val_order(q),:);
+% 
+%                 val = short_values(val_order(q),:);
 
                 % jay considers input given
                 spots = spot_shuffler(14);
 
                 for i = spots
-                    if i < 8
-                        v = val(worm);
-                    else
-                        v = val(peanut);
-                    end
-                    HVAL = v;
-                    PVAL = v;
+%                     if i < 8
+%                         v = val(worm);
+%                     else
+%                         v = val(peanut);
+%                     end
+                    HVAL = 1;
+                    PVAL = 1;
 
                     cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
                 end

@@ -24,12 +24,13 @@ if is_pfc
     eta = pfc_learning_rate;
     %decay = .000000001;
     %pfc_cur_decay = pfc_cur_decay + 0.00002;
-    pfc_decay = .2525;
+    pfc_decay = .025;
 %     if pfc_cur_decay > 1
 %        disp('HPC DECAY TOO LARGE!!!!!!!!!!!!!!!!!!'); 
 %     end
     decay = pfc_decay;
     max = pfc_max;
+    value = 0;
 else
     eta = learning_rate;
     decay = 0;
