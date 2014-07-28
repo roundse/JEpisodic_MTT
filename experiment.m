@@ -557,7 +557,7 @@ function [worm_trial pean_trial] = ...
     end
 
 	if ~is_testing
-        rein_dur = 0;
+        rein_dur = 2;
         
 %         if value == DEGR | value == PILF
 %             short_values = [REPL; REPL];
