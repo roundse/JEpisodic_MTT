@@ -37,13 +37,13 @@ global PILF;
 global DEGR;
 
 %      Worm   Peanut
-REPL = [ 6.0   2.0];
-PILF = [ 0.0   2.0];
-DEGR = [-4.0   2.0];
+REPL = [ 8.0   1.0];
+PILF = [ 0.0   1.0];
+DEGR = [-4.0   1.0];
 
 gain_oja = 0.7; 
-learning_rate = 0.5;
-pfc_learning_rate = 0.45;
+learning_rate = 0.221;
+pfc_learning_rate = 0.18;
 
 
 global pos;

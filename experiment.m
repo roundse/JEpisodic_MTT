@@ -557,7 +557,7 @@ function [worm_trial pean_trial] = ...
     end
 
 	if ~is_testing
-        rein_dur = 8;
+        rein_dur = 0;
         
 %         if value == DEGR | value == PILF
 %             short_values = [REPL; REPL];
@@ -566,7 +566,7 @@ function [worm_trial pean_trial] = ...
 %         end
         
         pfc_learning = 1;
-        hpc_learning = 1;        
+        hpc_learning = 0;        
         for t  = 1:rein_dur
             val_order = randperm(2); 
  
