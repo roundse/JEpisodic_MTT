@@ -226,7 +226,7 @@ function [worm_trial pean_trial] = ...
     global PVAL;
     global HVAL;
 
-    if VALUE == 3
+    if VALUE == 1
         value = DEGR;
         disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
