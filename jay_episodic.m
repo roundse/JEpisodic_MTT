@@ -5,9 +5,6 @@
 %   during testing, because testing is set up differently, so it was wrong
 
 function jay_episodic()
-clear;
-close all;
-clc;
 
 global learning_rate;
 global gain_oja;
@@ -28,7 +25,7 @@ INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 50;
+runs = 10;
 cycles = 9;
 % cycles = 8;
 
@@ -37,9 +34,9 @@ global PILF;
 global DEGR;
 
 %      Worm   Peanut
-REPL = [ 7.0   3.0];
-PILF = [ 0.0   3.0];
-DEGR = [-7.0   3.0];
+REPL = [ 6.0   1.0];
+PILF = [ 0.0   1.0];
+DEGR = [-5.0   1.0];
 
 gain_oja = 0.7; 
 learning_rate = 0.7;
