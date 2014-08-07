@@ -519,29 +519,29 @@ function [worm_trial pean_trial] = ...
         end
     end
 
-	if ~is_testing
-        rein_dur = 2;
-
-        pfc_learning = 1;
-        hpc_learning = 0;        
-        for t  = 1:rein_dur
-            val_order = randperm(2); 
-            for q = 1:2
-                spots = spot_shuffler(14);
-
-                for i = spots
-                    HVAL = 0;
-                    PVAL = 0;
-
-                    cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
-                end
-            end
-        
-        end
-        
-        pfc_learning = 0;
-        hpc_learning = 0;    
-    end
+% 	if ~is_testing
+%         rein_dur = 2;
+% 
+%         pfc_learning = 1;
+%         hpc_learning = 0;        
+%         for t  = 1:rein_dur
+%             val_order = randperm(2); 
+%             for q = 1:2
+%                 spots = spot_shuffler(14);
+% 
+%                 for i = spots
+%                     HVAL = 0;
+%                     PVAL = 0;
+% 
+%                     cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
+%                 end
+%             end
+%         
+%         end
+%         
+%         pfc_learning = 0;
+%         hpc_learning = 0;    
+%     end
 end
 
 
