@@ -58,6 +58,9 @@ for j = 2:cycles
 %         cycle_hpc(hpc_out, w_food_to_hpc,  food_stim, value);
     end
     
+    %Added a thing
+    cycle_hpc(hpc_out, w_food_to_hpc, food_stim, value);
+    
     cycle_pfc(pfc_out, w_place_to_pfc, place_out, value);
     cycle_pfc(pfc_out, w_food_to_pfc, food_out, value);   
   
