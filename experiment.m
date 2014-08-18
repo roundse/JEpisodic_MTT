@@ -244,6 +244,9 @@ function [worm_trial pean_trial] = ...
 
     is_place_stim = 0;
     is_food_stim = 0;
+
+    global lesion_pfc;
+    global lesion_hpc;
     
     global place;
     global hpc_cumul_activity;
@@ -276,6 +279,10 @@ function [worm_trial pean_trial] = ...
         
     if is_testing
         duration = 2;
+        
+        if lesion_hpc || lesion_pfc
+           disp('~~LESION TRIAL!~~');
+        end
     else
         duration = 4;
     end

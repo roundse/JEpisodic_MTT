@@ -11,6 +11,9 @@ global gain_oja;
 global INP_STR;
 global cycles;
   
+lesion_pfc = 0;
+lesion_hpc = 0;
+
 global pfc_learning_rate;
 
 global pfc_max;
@@ -25,7 +28,7 @@ INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 50;
+runs = 1;
 cycles = 9;
 % cycles = 8;
 
