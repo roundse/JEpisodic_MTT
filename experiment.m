@@ -226,7 +226,7 @@ function [worm_trial pean_trial] = ...
     global PVAL;
     global HVAL; 
 
-    if VALUE == 2
+    if VALUE == 1
         value = DEGR;
         disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
@@ -244,9 +244,6 @@ function [worm_trial pean_trial] = ...
 
     is_place_stim = 0;
     is_food_stim = 0;
-
-    global lesion_pfc;
-    global lesion_hpc;
     
     global place;
     global hpc_cumul_activity;
@@ -256,6 +253,8 @@ function [worm_trial pean_trial] = ...
     
     global hpc_learning;
     global pfc_learning;
+    
+    global is_testing;
     
     global pfc_cur_decay;
     pfc_cur_decay = 0;
@@ -279,10 +278,6 @@ function [worm_trial pean_trial] = ...
         
     if is_testing
         duration = 2;
-        
-        if lesion_hpc || lesion_pfc
-           disp('~~LESION TRIAL!~~');
-        end
     else
         duration = 4;
     end
@@ -525,7 +520,7 @@ function [worm_trial pean_trial] = ...
             reward_stim(value, cycles, is_replenish);
         end
     end
-
+    
 % 	if ~is_testing
 %         rein_dur = 2;
 % 
