@@ -16,8 +16,8 @@ global pfc_learning_rate;
 global lesion_pfc;
 global lesion_hpc;
 
-lesion_pfc = 0;
-lesion_hpc = 1;
+lesion_pfc = 1;
+lesion_hpc = 0;
 
 global pfc_max;
 global hpc_max;
@@ -31,7 +31,7 @@ INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 4;
+runs = 100;
 cycles = 9;
 % cycles = 8;
 
