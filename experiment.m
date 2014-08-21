@@ -19,7 +19,7 @@ global PLACE_CELLS;
 FOOD_CELLS = 2;
 PLACE_CELLS = 14;
 
-EXT_CONNECT = .1;                   % Chance of connection = 20%
+EXT_CONNECT = .05;                   % Chance of connection = 20%
 INT_CONNECT = .2;
 
 global worm;
@@ -85,9 +85,9 @@ global pfc_responses_to_place;
 pfc_in_queue = {};
 pfc_weight_queue = {};
 
-w_food_to_pfc = .5 .* ones(FOOD_CELLS, PFC_SIZE);
+w_food_to_pfc = .3 .* ones(FOOD_CELLS, PFC_SIZE);
 w_pfc_to_food = w_food_to_pfc';
-w_place_to_pfc = .5 .* ones(PLACE_CELLS, PFC_SIZE);
+w_place_to_pfc = .3 .* ones(PLACE_CELLS, PFC_SIZE);
 w_pfc_to_place = w_place_to_pfc';
 
 global w_pfc_to_place_init;
@@ -118,9 +118,9 @@ food_weight_queue = {};
 w_food_in = eye(FOOD_CELLS);
 w_food_to_food = zeros(FOOD_CELLS);
 
-w_food_to_hpc = 0.1 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_food_to_hpc = 0.36 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_food = - w_food_to_hpc';
-w_place_to_hpc = 0.1 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_place_to_hpc = 0.36 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_place =  - w_place_to_hpc';
 
 global w_hpc_to_place_init;
@@ -224,9 +224,9 @@ function [worm_trial pean_trial] = ...
     global REPL; global PILF; global DEGR;
 
     global PVAL;
-    global HVAL;
+    global HVAL; 
 
-    if VALUE == 2
+    if VALUE == 1
         value = DEGR;
         disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
 
@@ -238,19 +238,6 @@ function [worm_trial pean_trial] = ...
         value = PILF;
         disp('PILFER TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~~');
     end
-
-%     if VALUE == 1
-%         value = REPL;
-%         %disp('REPLENISH TRIAL~~~~~~~~~~~~~~~~~~~~~~~~');
-% 
-%     elseif VALUE == 2
-%         value = DEGR;
-%         %disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
-% 
-%     else
-%         value = PILF;
-%         %disp('PILFER TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~~');
-%     end
 
     global is_place_stim;
     global is_food_stim;
@@ -266,6 +253,8 @@ function [worm_trial pean_trial] = ...
     
     global hpc_learning;
     global pfc_learning;
+    
+    global is_testing;
     
     global pfc_cur_decay;
     pfc_cur_decay = 0;
@@ -362,9 +351,9 @@ function [worm_trial pean_trial] = ...
                     place(i,:) = current_type;
                 end
                 if i < 8
-                    v = REPL(worm);
+                    v = 0;
                 else
-                    v = REPL(peanut);
+                    v = 0;
                 end
 
                 cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
@@ -459,6 +448,12 @@ function [worm_trial pean_trial] = ...
             activity2 = mean(m2);
             %disp(['PFC Consolidate: ', num2str(activity2)]);
             hpc_cur_decay = 0;
+            
+            if ~is_testing
+                hpc_learning = 1;
+                pfc_learning = 1;
+                reward_stim(value, cycles, is_replenish);
+            end
         end
         
         if is_testing
@@ -520,79 +515,81 @@ function [worm_trial pean_trial] = ...
         end
         
         
-%       collection of food, presentation of value
-        if is_replenish
-            val = REPL;
-        else
-            val = value;
+        if is_testing
+            hpc_learning = 1;
+            reward_stim(value, cycles, is_replenish);
         end
-
-        is_place_stim = 1;
-        is_food_stim = 1;
-        hpc_learning = 1;
-        if ~is_testing
-            pfc_learning = 1;
-        end
-        
-        for q = 1:4
-            % jay considers input given
-            spots = spot_shuffler(14);
-
-            for i = spots
-                if i < 8
-                    v = val(worm);
-                else
-                    v = val(peanut);
-                end
-                HVAL = v;
-                PVAL = v;
-
-                cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, v);
-            end
-        end
-        pfc_learning = 0;
-        hpc_learning = 0;
-        is_place_stim = 0;
-        is_food_stim = 0;
     end
-
-	if ~is_testing
-        rein_dur = 2;
-        
-%         if value == DEGR | value == PILF
-%             short_values = [REPL; REPL];
-%         else
-%             short_values = [value; value];
-%         end
-        
-        pfc_learning = 1;
-        hpc_learning = 0;        
-        for t  = 1:rein_dur
-            val_order = randperm(2); 
- 
-            for q = 1:2
+    
+% 	if ~is_testing
+%         rein_dur = 2;
 % 
-%                 val = short_values(val_order(q),:);
+%         pfc_learning = 1;
+%         hpc_learning = 0;        
+%         for t  = 1:rein_dur
+%             val_order = randperm(2); 
+%             for q = 1:2
+%                 spots = spot_shuffler(14);
+% 
+%                 for i = spots
+%                     HVAL = 0;
+%                     PVAL = 0;
+% 
+%                     cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
+%                 end
+%             end
+%         
+%         end
+%         
+%         pfc_learning = 0;
+%         hpc_learning = 0;    
+%     end
+end
 
-                % jay considers input given
-                spots = spot_shuffler(14);
 
-                for i = spots
-%                     if i < 8
-%                         v = val(worm);
-%                     else
-%                         v = val(peanut);
-%                     end
-                    HVAL = 0;
-                    PVAL = 0;
+function reward_stim(value, cycles, is_replenish)
 
-                    cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
-                end
-            end
-        
-        end
-        
-        pfc_learning = 0;
-        hpc_learning = 0;    
+    global REPL;
+    global is_place_stim;
+    global is_food_stim;
+    global pfc_learning;
+    global hpc_learning;
+    global HVAL;
+    global PVAL;
+    
+    global worm;
+    global peanut;
+    
+    global PLACE_SLOTS;
+    global place;
+
+    if is_replenish
+        val = REPL;
+    else
+        val = value;
     end
+    is_place_stim = 1;
+    is_food_stim = 1;
+
+    for q = 1:6
+        % jay considers input given
+        spots = spot_shuffler(14);
+
+        for i = spots
+            if i < 8
+                v = val(worm);
+            else
+                v = val(peanut);
+            end
+            HVAL = v;
+            PVAL = v;
+
+            cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
+        end
+    end
+    is_place_stim = 0;
+    is_food_stim = 0;
+    pfc_learning = 0;
+    hpc_learning = 0; 
+
 end
