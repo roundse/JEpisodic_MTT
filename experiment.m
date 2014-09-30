@@ -85,9 +85,9 @@ global pfc_responses_to_place;
 pfc_in_queue = {};
 pfc_weight_queue = {};
 
-w_food_to_pfc = .3 .* ones(FOOD_CELLS, PFC_SIZE);
+w_food_to_pfc = .2 .* ones(FOOD_CELLS, PFC_SIZE);
 w_pfc_to_food = w_food_to_pfc';
-w_place_to_pfc = .3 .* ones(PLACE_CELLS, PFC_SIZE);
+w_place_to_pfc = .2 .* ones(PLACE_CELLS, PFC_SIZE);
 w_pfc_to_place = w_place_to_pfc';
 
 global w_pfc_to_place_init;
@@ -118,9 +118,9 @@ food_weight_queue = {};
 w_food_in = eye(FOOD_CELLS);
 w_food_to_food = zeros(FOOD_CELLS);
 
-w_food_to_hpc = 0.36 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_food_to_hpc = 0.1 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_food = - w_food_to_hpc';
-w_place_to_hpc = 0.36 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_place_to_hpc = 0.1 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_place =  - w_place_to_hpc';
 
 global w_hpc_to_place_init;
@@ -355,8 +355,8 @@ function [worm_trial pean_trial] = ...
                 else
                     v = 0;
                 end
-
-                cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
+                %disp(['Currently consolidating...value is "',num2str(0)]);
+                cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, 0);
             end
             is_place_stim = 0;
             is_food_stim = 0;
@@ -428,8 +428,8 @@ function [worm_trial pean_trial] = ...
                     
                     PVAL = v;
                     HVAL = v;
-                        
-                    cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, v);
+                   % disp(['Currently consolidating...value is ', num2str(0)]);    
+                    cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, 0);
                        % v*in_decay);
                 end
                 is_place_stim = 1;
@@ -449,10 +449,12 @@ function [worm_trial pean_trial] = ...
             %disp(['PFC Consolidate: ', num2str(activity2)]);
             hpc_cur_decay = 0;
             
+            hpc_learning = 0;
+            pfc_learning = 1;
             if ~is_testing
                 hpc_learning = 1;
                 pfc_learning = 1;
-                reward_stim(value, cycles, is_replenish);
+                %reward_stim(value, cycles, is_replenish);
             end
         end
         
@@ -515,10 +517,10 @@ function [worm_trial pean_trial] = ...
         end
         
         
-        if is_testing
-            hpc_learning = 1;
-            reward_stim(value, cycles, is_replenish);
-        end
+%         if is_testing
+%             hpc_learning = 1;
+%             reward_stim(value, cycles, is_replenish);
+%         end
     end
     
 % 	if ~is_testing
@@ -571,7 +573,7 @@ function reward_stim(value, cycles, is_replenish)
     is_place_stim = 1;
     is_food_stim = 1;
 
-    for q = 1:6
+    for q = 1:1
         % jay considers input given
         spots = spot_shuffler(14);
 
@@ -583,7 +585,7 @@ function reward_stim(value, cycles, is_replenish)
             end
             HVAL = v;
             PVAL = v;
-
+            %disp(['Currently consolidating...value is ', num2str(v)]);
             cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
         end
     end
