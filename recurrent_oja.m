@@ -20,7 +20,7 @@ max = max_max_weight;
 
 if is_pfc
     eta = pfc_learning_rate;
-    pfc_decay = .7;
+    pfc_decay = .35;
     decay = pfc_decay;
     max = pfc_max;
 else

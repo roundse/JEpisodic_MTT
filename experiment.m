@@ -1,4 +1,4 @@
-function [worm_trial pean_trial] = experiment(cycles, ... 
+function [worm_trial pean_trial] = experiment(cycles, ...
     learning_rate, gain_oja, is_disp_weights, VALUE)
 
 % To do:
@@ -13,13 +13,13 @@ GAIN = 5;
 
 global HPC_SIZE;
 HPC_SIZE = 250;                 % 2 x 14 possible combinations multipled
-                                % by 10 for random connectivity of 10%
+% by 10 for random connectivity of 10%
 global FOOD_CELLS;
 global PLACE_CELLS;
 FOOD_CELLS = 2;
 PLACE_CELLS = 14;
 
-EXT_CONNECT = .05;                   % Chance of connection = 20%
+EXT_CONNECT = .2;                   % Chance of connection = 20%
 INT_CONNECT = .2;
 
 global worm;
@@ -118,9 +118,9 @@ food_weight_queue = {};
 w_food_in = eye(FOOD_CELLS);
 w_food_to_food = zeros(FOOD_CELLS);
 
-w_food_to_hpc = 0.1 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_food_to_hpc = 0.4.* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_food = - w_food_to_hpc';
-w_place_to_hpc = 0.1 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_place_to_hpc = 0.4 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_place =  - w_place_to_hpc';
 
 global w_hpc_to_place_init;
@@ -161,8 +161,8 @@ end
 
 place = place';
 
-global default_val;
-default_val = [5 2];
+% global default_val;
+% default_val = [5 2];
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRE: Agent stores both foods. Consolidates 124 hours and is allowed to
@@ -181,7 +181,7 @@ run_protocol('training', cycles, is_disp_weights, VALUE);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [worm_trial pean_trial] = ...
-                        run_protocol('testing', cycles, is_disp_weights, VALUE);
+    run_protocol('testing', cycles, is_disp_weights, VALUE);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -200,262 +200,138 @@ clear(varlist{:})
 end
 
 function places = spot_shuffler (start, finish)
-    if (nargin == 1)
-        places = randperm(start);
-    else
-        range = finish - start+1;
-        numsets = (start : finish);
-        perm = randperm(range);
-
-        for i=1:range
-            p = perm(i);
-            places(i) = numsets(p);
-        end
+if (nargin == 1)
+    places = randperm(start);
+else
+    range = finish - start+1;
+    numsets = (start : finish);
+    perm = randperm(range);
+    
+    for i=1:range
+        p = perm(i);
+        places(i) = numsets(p);
     end
+end
 end
 
 function [worm_trial pean_trial] = ...
-          run_protocol (prot_type, cycles, is_disp_weights, VALUE)
-    global PLACE_SLOTS;
+    run_protocol (prot_type, cycles, is_disp_weights, VALUE)
+global PLACE_SLOTS;
+
+global worm;   global WORM;
+global peanut; global PEANUT;
+
+global REPL; global PILF; global DEGR;
+
+global PVAL;
+global HVAL;
+
+if VALUE == 1
+    value = DEGR;
+    disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
     
-    global worm;   global WORM;
-    global peanut; global PEANUT;
+elseif VALUE == 3
+    value = REPL;
+    disp('REPLENISH TRIAL~~~~~~~~~~~~~~~~~~~~~~~~');
     
-    global REPL; global PILF; global DEGR;
+else
+    value = PILF;
+    disp('PILFER TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+end
 
-    global PVAL;
-    global HVAL; 
+global is_place_stim;
+global is_food_stim;
 
-    if VALUE == 1
-        value = DEGR;
-        disp('DEGRADE TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~');
+is_place_stim = 0;
+is_food_stim = 0;
 
-    elseif VALUE == 3
-        value = REPL;
-        disp('REPLENISH TRIAL~~~~~~~~~~~~~~~~~~~~~~~~');
+global place;
+global hpc_cumul_activity;
+global pfc_cumul_activity;
 
-    else
-        value = PILF;
-        disp('PILFER TRIAL~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+global is_pfc;
+
+global hpc_learning;
+global pfc_learning;
+
+global hpc_cur_decay;
+hpc_cur_decay = 0;
+
+global lesion_pfc;
+global lesion_hpc;
+
+global current_time;
+
+hpc_learning = 0;
+pfc_learning = 0;
+
+is_pfc = 0;
+
+food_types = [peanut worm];
+rev_food = [worm peanut];
+time_lengths = [120, 4];
+%     time_lengths = [1, 1];
+
+type_order = randperm(2);
+time_order = randperm(2);
+
+global is_testing;
+is_testing = strcmp(prot_type, 'testing');
+
+global is_learning;
+
+if is_testing
+    duration = 2;
+    
+    if lesion_hpc || lesion_pfc
+        disp('~~LESION TRIAL!~~');
     end
+else
+    duration = 4;
+end
 
-    global is_place_stim;
-    global is_food_stim;
+global hpc_average;
+global pfc_average;
 
-    is_place_stim = 0;
-    is_food_stim = 0;
-    
-    global place;
-    global hpc_cumul_activity;
-    global pfc_cumul_activity;
+global hpc;
+global pfc;
 
-    global is_pfc;
-    
-    global hpc_learning;
-    global pfc_learning;
-    
-    global is_testing;
-    
-    global pfc_cur_decay;
-    pfc_cur_decay = 0;
+hpc_average = hpc(1,:);
+pfc_average = pfc(1,:);
 
-    hpc_learning = 0;
-    pfc_learning = 0;
+PVAL = 1;
+HVAL = 1;
 
-    is_pfc = 0;
-    
-    food_types = [peanut worm];
-    rev_food = [worm peanut];
-    time_lengths = [120, 4];
-    %time_lengths = [1, 1];
-    
-    type_order = randperm(2);
-    time_order = randperm(2);
-    
-    is_testing = strcmp(prot_type, 'testing');
-
-    global is_learning;
+for j=1:duration
+    for l=1:2
+        is_learning = 0;
         
-    if is_testing
-        duration = 2;
-    else
-        duration = 4;
-    end
-
-    PVAL = 1;
-    HVAL = 1;
-   
-    for j=1:duration
-        for l=1:2
-            is_learning = 0;
+        % if testing time is always 4 then 120
+        if is_testing
+            current_time = time_lengths(l);
+            current_type = food_types(type_order(l));
             
-            % if testing time is always 4 then 120
-            if is_testing
-                current_time = time_lengths(l);
-                current_type = food_types(type_order(l));
-                           
-             % otherwise time is randomly one way or the other
+            % otherwise time is randomly one way or the other
+        else
+            current_time = time_lengths(time_order(l));
+            current_type = food_types(type_order(l));
+            
+        end
+        
+        if current_type == worm
+            disp('worm');
+        else
+            disp('peanut');
+        end
+        
+        if is_testing
+            if l == 1
+                current_place = 'First';
             else
-                current_time = time_lengths(time_order(l));
-                current_type = food_types(type_order(l));
-                
+                current_place = 'Second';
             end
-            
-            %disp([prot_type, ' ', num2str(j)]);
-            
-            if current_type == worm
-                disp('worm');                
-            else
-                disp('peanut');
-            end
-
-
-            if is_testing
-                if l == 1
-                    current_place = 'First';
-                else
-                    current_place = 'Second';
-                end
-            else 
-                current_place = 'First stored food is';
-            end
-            
-            if current_type == peanut
-                %disp([current_place, ' food to be stored is peanut']);
-            else
-                %disp([current_place, ' food to be stored is worm']);  
-            end
-
-            disp([current_place, ' consolidation period is: ', num2str(current_time)]);
-
-            if is_testing
-                if current_type == worm
-                    spots = spot_shuffler(7);
-                else
-                    spots = spot_shuffler(8,14);
-                end        
-            else
-                if current_type == worm
-                    spots = horzcat(spot_shuffler(7), spot_shuffler(8,14));
-                else
-                    spots = horzcat(spot_shuffler(8,14), spot_shuffler(7));
-                end   
-            end
-
-            
-            is_place_stim = 1;
-            is_food_stim = 1;
-            
-            for i = spots
-                while place(i,:) == 0
-                    place(i,:) = current_type;
-                end
-                if i < 8
-                    v = 0;
-                else
-                    v = 0;
-                end
-                %disp(['Currently consolidating...value is "',num2str(0)]);
-                cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, 0);
-            end
-            is_place_stim = 0;
-            is_food_stim = 0;
-            % consolidate
-%             spots = spot_shuffler(14);
-
-            if is_testing
-               if current_time == 4
-                    if current_type == peanut
-                        spots = horzcat(spot_shuffler(7), spot_shuffler(8,14));
-                    else
-                        spots = horzcat(spot_shuffler(8,14), spot_shuffler(7));
-                    end  
-               end
-            end
-
-            if is_testing
-                is_replenish =  current_type == worm & current_time == 4;
-            else
-                is_replenish = current_time == 4;
-            end
-            
-%             if value == PILF
-%                 is_replenish = 0;
-%             end
-
-            if is_replenish
-                val = REPL;
-            else
-                val = value;
-            end
-            
-            %%disp('training value is...');
-            %disp(val);
-
-            hpc_cumul_activity = 0;
-            pfc_cumul_activity = 0;
-            is_place_stim = 1;
-            
-            for q = 1:current_time
-                hpc_learning = 1;
-                
-                if is_testing
-                   if current_time == 4
-                        spots = spot_shuffler(1,14); 
-                   else
-                        if current_type == worm
-                            spots = spot_shuffler(7);
-                        else
-                            spots = spot_shuffler(8,14);
-                        end  
-                   end
-                else
-                    spots = spot_shuffler(1,14);
-                end
-                
-                if q == 4
-                    is_place_stim = 0;
-                end
-                
-               % in_decay = 1;
-                for i = spots
-                    %in_decay = in_decay * 0.9;
-                    if i < 8
-                        v = val(worm);
-                    else
-                        v = val(peanut);
-                    end
-                    
-                    PVAL = v;
-                    HVAL = v;
-                   % disp(['Currently consolidating...value is ', num2str(0)]);    
-                    cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, 0);
-                       % v*in_decay);
-                end
-                is_place_stim = 1;
-
-            end
-            hpc_learning = 0;
-            
-            %%disp('Current value is:');
-            %disp(val);
-            
-            m1 = mean(hpc_cumul_activity) / (current_time*14);
-            activity1 = mean(m1);
-            %disp(['HPC Consolidate: ', num2str(activity1)]);
-
-            m2 = mean(pfc_cumul_activity) / (current_time*14);
-            activity2 = mean(m2);
-            %disp(['PFC Consolidate: ', num2str(activity2)]);
-            hpc_cur_decay = 0;
-            
-            hpc_learning = 0;
-            pfc_learning = 1;
-            if ~is_testing
-                hpc_learning = 1;
-                pfc_learning = 1;
-                %reward_stim(value, cycles, is_replenish);
-            end
+        else
+            current_place = 'First stored food is';
         end
         
         if is_testing
@@ -464,134 +340,264 @@ function [worm_trial pean_trial] = ...
             is_replenish = current_time == 4;
         end
         
+        disp([current_place, ' consolidation period is: ', num2str(current_time)]);
+        
         if is_testing
-            [checked_places, side_pref, avg_checks, first_checked] ...
-                 = place_slot_check;
-
-            show_weights([prot_type, ' ', num2str(current_time)], is_disp_weights);
-             
-            if is_replenish
-                if value == DEGR
-                    expected = 6;
-                elseif value == PILF
-                    expected = 4;  
-                else
-                    expected = 6;
-                end
+            if current_type == worm
+                spots = spot_shuffler(7);
             else
-                if value == DEGR
-                    expected = 1;
-                elseif value == PILF
-                    expected = 4;  
-                else
-                    expected = 6;
-                end 
+                spots = spot_shuffler(8,14);
             end
-            
-            trial = struct('type_order' , current_type, ...
-                           'check_order', checked_places, ...
-                           'first_check', first_checked, ...
-                           'side_pref'  , side_pref, ...
-                           'error_pref' , (side_pref-expected), ...
-                           'avg_checks' , avg_checks);
-                       
-            food_types = [food_types(2) food_types(1)];
-
-            if value == DEGR & trial.('type_order') ~= worm & side_pref < 3
-                disp('bad trial!');
-            elseif value == REPL & trial.('type_order') == worm & side_pref < 4
-                disp('bad trial!');               
-            elseif value == REPL & side_pref < 4
-                disp('bad trial!');
-            end
-            
-            if (trial.('type_order') ~= worm)
-                 pean_trial = trial;
-            else
-                 worm_trial = trial;
-            end
-        % if training then just reverse time order after trial
         else
-            time_order = [time_order(2) time_order(1)];
-            %type_order = [type_order(2) type_order(1)];
+            if current_type == worm
+                spots = horzcat(spot_shuffler(7), spot_shuffler(8,14));
+            else
+                spots = horzcat(spot_shuffler(8,14), spot_shuffler(7));
+            end
         end
         
+        %val = 0;
+        is_place_stim = 1;
+        is_food_stim = 1;
         
-%         if is_testing
-%             hpc_learning = 1;
-%             reward_stim(value, cycles, is_replenish);
-%         end
+        for i = spots
+            if i < 8  %IN CACHING, ALWAYS USE REPL VALUE
+                v = 6;
+            else
+                v = 1;
+            end
+            while place(i,:) == 0
+                place(i,:) = current_type;
+            end
+            %             if is_testing
+            %disp(['Currently in the caching phase...value is ', num2str(v)]);
+            %             end
+            cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
+        end
+        is_place_stim = 0;
+        % consolidate
+        
+        if is_testing
+            if current_time == 4
+                if current_type == peanut
+                    spots = horzcat(spot_shuffler(7), spot_shuffler(8,14));
+                else
+                    spots = horzcat(spot_shuffler(8,14), spot_shuffler(7));
+                end
+            end
+        end
+        
+        if is_replenish
+            val = REPL;
+        else
+            val = value;
+        end
+        
+        hpc_cumul_activity = 0;
+        pfc_cumul_activity = 0;
+        
+        
+        
+        
+        
+        % TURN THIS ON/OF FOR LEARNING DURING TESTING/TRAINING
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        hpc_learning = 0;
+        pfc_learning = 1;
+        if ~is_testing
+            pfc_learning = 1;
+            hpc_learning = 1;
+        end
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        
+        
+        for q = 1:current_time
+            
+            if is_testing
+                if current_time == 4
+                    spots = spot_shuffler(1,14);
+                else
+                    if current_type == worm
+                        spots = spot_shuffler(7);
+                    else
+                        spots = spot_shuffler(8,14);
+                    end
+                end
+            else
+                spots = spot_shuffler(1,14);
+            end
+            
+            for i = spots
+                if i < 8
+                    v = val(worm);
+                else
+                    v = val(peanut);
+                end
+                
+                %                 PVAL = v;
+                %                 HVAL = v;
+                %                   if is_testing
+                %disp(['Currently in the consolidating phase...value is ', num2str(0)]);
+                %                   end
+                cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, 0);
+                
+            end
+        end
+        hpc_learning = 0;
+        pfc_learning = 0;
+        
+        show_weights([prot_type, ' ', num2str(current_time)], is_disp_weights);
+        
+        m1 = mean(hpc_cumul_activity) / (current_time*14);
+        global activity1;
+        activity1 = mean(m1);
+        %disp(['HPC Consolidate: ', num2str(activity1)]);
+        
+        %        save_state('during expriment');
+        
+        m2 = mean(pfc_cumul_activity) / (current_time*14);
+        global activity2;
+        activity2 = mean(m2);
+        %disp(['PFC Consolidate: ', num2str(activity2)]);
+        hpc_cur_decay = 0;
+        
+        if ~is_testing
+            pfc_learning = 1;
+            hpc_learning = 1;
+            PVAL = v;
+            HVAL = v;
+            
+            reward_stim(value, cycles, is_replenish);
+        end
     end
     
+    if is_testing
+        [checked_places, side_pref, avg_checks, first_checked] ...
+            = place_slot_check;
+        
+        if is_replenish
+            if value == DEGR
+                expected = 6;
+            elseif value == PILF
+                expected = 4;
+            else
+                expected = 6;
+            end
+        else
+            if value == DEGR
+                expected = 1;
+            elseif value == PILF
+                expected = 4;
+            else
+                expected = 6;
+            end
+        end
+        
+        trial = struct('type_order' , current_type, ...
+            'check_order', checked_places, ...
+            'first_check', first_checked, ...
+            'side_pref'  , side_pref, ...
+            'error_pref' , (side_pref-expected), ...
+            'avg_checks' , avg_checks);
+        
+        food_types = [food_types(2) food_types(1)];
+        
+        if value == DEGR & trial.('type_order') ~= worm & side_pref < 3
+            disp('bad trial!');
+        elseif value == REPL & trial.('type_order') == worm & side_pref < 4
+            disp('bad trial!');
+        elseif value == REPL & side_pref < 4
+            disp('bad trial!');
+        end
+        
+        if (trial.('type_order') ~= worm)
+            pean_trial = trial;
+        else
+            worm_trial = trial;
+        end
+        % if training then just reverse time order after trial
+    else
+        time_order = [time_order(2) time_order(1)];
+        %type_order = [type_order(2) type_order(1)];
+    end
+    
+    %     if is_testing
+    %         hpc_learning = 1;
+    %         reward_stim(value, cycles, is_replenish);
+    %     end
+end
+
 % 	if ~is_testing
 %         rein_dur = 2;
-% 
-%         pfc_learning = 1;
-%         hpc_learning = 0;        
+%
 %         for t  = 1:rein_dur
-%             val_order = randperm(2); 
 %             for q = 1:2
+%                 pfc_learning = 1;
+%                 hpc_learning = 1;
+%
 %                 spots = spot_shuffler(14);
-% 
+%
 %                 for i = spots
 %                     HVAL = 0;
 %                     PVAL = 0;
-% 
-%                     cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
+%
+%                     cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, v);
 %                 end
 %             end
-%         
+%
 %         end
-%         
+%
 %         pfc_learning = 0;
-%         hpc_learning = 0;    
+%         hpc_learning = 0;
 %     end
 end
 
-
 function reward_stim(value, cycles, is_replenish)
 
-    global REPL;
-    global is_place_stim;
-    global is_food_stim;
-    global pfc_learning;
-    global hpc_learning;
-    global HVAL;
-    global PVAL;
+global REPL;
+global is_place_stim;
+global is_food_stim;
+global pfc_learning;
+global hpc_learning;
+global HVAL;
+global PVAL;
+
+global worm;
+global peanut;
+
+global PLACE_SLOTS;
+global place;
+
+if is_replenish
+    val = REPL;
+else
+    val = value;
+end
+is_place_stim = 1;
+is_food_stim = 1;
+
+for q = 1:1
+    % jay considers input given
+    spots = spot_shuffler(14);
     
-    global worm;
-    global peanut;
-    
-    global PLACE_SLOTS;
-    global place;
-
-    if is_replenish
-        val = REPL;
-    else
-        val = value;
-    end
-    is_place_stim = 1;
-    is_food_stim = 1;
-
-    for q = 1:1
-        % jay considers input given
-        spots = spot_shuffler(14);
-
-        for i = spots
-            if i < 8
-                v = val(worm);
-            else
-                v = val(peanut);
-            end
-            HVAL = v;
-            PVAL = v;
-            %disp(['Currently consolidating...value is ', num2str(v)]);
-            cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
+    for i = spots
+        if i < 8
+            v = val(worm);
+        else
+            v = val(peanut);
         end
+        %disp(['Currently in recovery phase...value is ', num2str(v)]);
+        cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
     end
-    is_place_stim = 0;
-    is_food_stim = 0;
-    pfc_learning = 0;
-    hpc_learning = 0; 
+end
+
+is_place_stim = 0;
+is_food_stim = 0;
+pfc_learning = 0;
+hpc_learning = 0;
 
 end

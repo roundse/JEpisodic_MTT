@@ -31,8 +31,8 @@ INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 15;
-cycles = 9;
+runs = 25;
+cycles = 14;
 % cycles = 8;
 
 global REPL;
@@ -40,13 +40,13 @@ global PILF;
 global DEGR;
 
 %      Worm   Peanut
-REPL = [ 6.0   1.0];
+REPL = [ 5.0   1.0];
 PILF = [ 0.0   1.0];
-DEGR = [-6.0   1.0];
+DEGR = [-5.0   1.0];
 
 gain_oja = 0.7; 
-learning_rate = .13;
-pfc_learning_rate = 0.315;
+learning_rate = 0.5;
+pfc_learning_rate = 0.7;
 
 global pos;
 global DIR;
