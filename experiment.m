@@ -85,10 +85,11 @@ global pfc_responses_to_place;
 pfc_in_queue = {};
 pfc_weight_queue = {};
 
-w_food_to_pfc = .2 .* ones(FOOD_CELLS, PFC_SIZE);
+w_food_to_pfc = 3.0 .* ones(FOOD_CELLS, PFC_SIZE);
 w_pfc_to_food = w_food_to_pfc';
-w_place_to_pfc = .2 .* ones(PLACE_CELLS, PFC_SIZE);
+w_place_to_pfc = 3.0 .* ones(PLACE_CELLS, PFC_SIZE);
 w_pfc_to_place = w_place_to_pfc';
+
 
 global w_pfc_to_place_init;
 global w_place_to_pfc_init;
@@ -118,9 +119,9 @@ food_weight_queue = {};
 w_food_in = eye(FOOD_CELLS);
 w_food_to_food = zeros(FOOD_CELLS);
 
-w_food_to_hpc = 0.4.* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_food_to_hpc = 1.76 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_food = - w_food_to_hpc';
-w_place_to_hpc = 0.4 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_place_to_hpc = 1.76 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_place =  - w_place_to_hpc';
 
 global w_hpc_to_place_init;
@@ -375,6 +376,7 @@ for j=1:duration
             cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
         end
         is_place_stim = 0;
+        is_food_stim = 0;
         % consolidate
         
         if is_testing
@@ -402,7 +404,7 @@ for j=1:duration
         
         % TURN THIS ON/OF FOR LEARNING DURING TESTING/TRAINING
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        hpc_learning = 0;
+        hpc_learning = 1;
         pfc_learning = 1;
         if ~is_testing
             pfc_learning = 1;
@@ -441,7 +443,9 @@ for j=1:duration
                 %                 PVAL = v;
                 %                 HVAL = v;
                 %                   if is_testing
-                %disp(['Currently in the consolidating phase...value is ', num2str(0)]);
+                %disp(['Currently in the consolidating phase...value is ', ...
+                %    num2str(0), ', pfc learning is ', num2str(pfc_learning), ...
+                %    ', and hpc learning is ', num2str(hpc_learning)]);
                 %                   end
                 cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, 0);
                 
@@ -566,6 +570,7 @@ global hpc_learning;
 global HVAL;
 global PVAL;
 
+%pfc_learning = 1;
 global worm;
 global peanut;
 
@@ -580,7 +585,7 @@ end
 is_place_stim = 1;
 is_food_stim = 1;
 
-for q = 1:1
+for q = 1:2
     % jay considers input given
     spots = spot_shuffler(14);
     
