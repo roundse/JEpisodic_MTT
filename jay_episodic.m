@@ -24,14 +24,14 @@ global hpc_max;
 global max_max_weight;
 
 pfc_max = 8;
-hpc_max = 8; 
+hpc_max = 8;
 max_max_weight = 20;
 
 INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 5;
+runs = 25;
 cycles = 9;
 % cycles = 8;
 
@@ -39,20 +39,14 @@ global REPL;
 global PILF;
 global DEGR;
 
-global show_pfc_w;
-global show_hpc_w;
-
-show_pfc_w = 0;
-show_hpc_w = 0;
-
 %      Worm   Peanut
 REPL = [ 4.0   2.0];
 PILF = [ 0.0   2.0];
 DEGR = [-4.0   2.0];
 
 gain_oja = 0.7; 
-learning_rate = 0.3;
-pfc_learning_rate = 0.3;
+learning_rate = 0.1;
+pfc_learning_rate = 0.09;
 
 global pos;
 global DIR;
@@ -76,7 +70,7 @@ value_groups = {};
 
 multi_groups = {};
 
-is_disp_weights = 1;
+is_disp_weights = 0;
 % profile on
 for e=1:1
     v = 1;
