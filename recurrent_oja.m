@@ -20,7 +20,7 @@ max = max_max_weight;
 
 if is_pfc
     eta = pfc_learning_rate;
-    pfc_decay = .45;
+    pfc_decay = .185;
     decay = pfc_decay;
     max = pfc_max;
 else
@@ -38,6 +38,9 @@ wy = input_weights';
 [J, I, ~] = find(wx);
 K = size(J);
 y_wx =  y*wx;
+
+wx_bin = wx~=0;
+wy_bin = wy~=0;
 
 % output weights
 for k = 1:K
@@ -61,8 +64,14 @@ for k = 1:K
     wy(j,i) = (wy(j,i) + delta_wy) - (decay * delta_wy);
 end
 
+wx = wx .* wx_bin;
+wy = wy .* wy_bin;
+
 wx(wx>20) = 20;
 wy(wy>20) = 20;
+
+wx(wx<-20) = -20;
+wy(wy<-20) = -20;
 
 end
 
