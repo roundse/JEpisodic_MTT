@@ -85,9 +85,9 @@ global pfc_responses_to_place;
 pfc_in_queue = {};
 pfc_weight_queue = {};
 
-w_food_to_pfc = 3.0 .* ones(FOOD_CELLS, PFC_SIZE);
+w_food_to_pfc = .01 .* ones(FOOD_CELLS, PFC_SIZE);
 w_pfc_to_food = w_food_to_pfc';
-w_place_to_pfc = 3.0 .* ones(PLACE_CELLS, PFC_SIZE);
+w_place_to_pfc = .01.* ones(PLACE_CELLS, PFC_SIZE);
 w_pfc_to_place = w_place_to_pfc';
 
 
@@ -119,9 +119,9 @@ food_weight_queue = {};
 w_food_in = eye(FOOD_CELLS);
 w_food_to_food = zeros(FOOD_CELLS);
 
-w_food_to_hpc = 1.76 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_food_to_hpc = .1 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_food = - w_food_to_hpc';
-w_place_to_hpc = 1.76 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_place_to_hpc = .1 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_place =  - w_place_to_hpc';
 
 global w_hpc_to_place_init;
@@ -373,7 +373,7 @@ for j=1:duration
             %             if is_testing
             %disp(['Currently in the caching phase...value is ', num2str(v)]);
             %             end
-            cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
+            cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, 0);
         end
         is_place_stim = 0;
         is_food_stim = 0;
@@ -535,29 +535,29 @@ for j=1:duration
     %     end
 end
 
-% 	if ~is_testing
-%         rein_dur = 2;
-%
-%         for t  = 1:rein_dur
-%             for q = 1:2
-%                 pfc_learning = 1;
-%                 hpc_learning = 1;
-%
-%                 spots = spot_shuffler(14);
-%
-%                 for i = spots
-%                     HVAL = 0;
-%                     PVAL = 0;
-%
-%                     cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, v);
-%                 end
-%             end
-%
-%         end
-%
-%         pfc_learning = 0;
-%         hpc_learning = 0;
-%     end
+    if ~is_testing
+        rein_dur = 2;
+
+        for t  = 1:rein_dur
+            for q = 1:2
+                pfc_learning = 1;
+                hpc_learning = 1;
+
+                spots = spot_shuffler(14);
+
+                for i = spots
+                    HVAL = 0;
+                    PVAL = 0;
+
+                    cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, 0);
+                end
+            end
+
+        end
+
+        pfc_learning = 0;
+        hpc_learning = 0;
+    end
 end
 
 function reward_stim(value, cycles, is_replenish)

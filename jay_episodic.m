@@ -45,8 +45,8 @@ PILF = [ 0.0   2.0];
 DEGR = [-4.0   2.0];
 
 gain_oja = 0.7; 
-learning_rate = 0.58;
-pfc_learning_rate = 0.55;
+learning_rate = 0.1;
+pfc_learning_rate = 0.09;
 
 global pos;
 global DIR;
