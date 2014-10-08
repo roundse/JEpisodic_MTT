@@ -57,7 +57,7 @@ DEGR = [-6.0   2.0];
 
 gain_oja = 0.7; 
 learning_rate = 0.6;
-pfc_learning_rate = 0.54;
+pfc_learning_rate = 0.3;
 
 global pos;
 global DIR;

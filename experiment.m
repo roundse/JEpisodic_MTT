@@ -19,7 +19,7 @@ global PLACE_CELLS;
 FOOD_CELLS = 2;
 PLACE_CELLS = 14;
 
-EXT_CONNECT = .05;                   % Chance of connection = 20%
+EXT_CONNECT = .1;                   % Chance of connection = 20%
 INT_CONNECT = .2;
 
 global worm;
@@ -83,14 +83,14 @@ global pfc_weight_queue;
 global pfc_responses_to_place;
 
 global w_pfc_to_pfc;
-w_pfc_to_pfc = .08 .* ones(PFC_SIZE);
+w_pfc_to_pfc = .8 .* ones(PFC_SIZE);
 
 pfc_in_queue = {};
 pfc_weight_queue = {};
 
-w_food_to_pfc = .4 .* (rand(FOOD_CELLS, PFC_SIZE) < 1);
+w_food_to_pfc = .6 .* (rand(FOOD_CELLS, PFC_SIZE) < 1);
 w_pfc_to_food = - w_food_to_pfc';
-w_place_to_pfc = .4 .* (rand(PLACE_CELLS, PFC_SIZE) < 1);
+w_place_to_pfc = .6 .* (rand(PLACE_CELLS, PFC_SIZE) < 1);
 w_pfc_to_place = - w_place_to_pfc';
 
 
@@ -126,15 +126,15 @@ food_weight_queue = {};
 w_food_in = eye(FOOD_CELLS);
 w_food_to_food = zeros(FOOD_CELLS);
 
-w_food_to_hpc = .65.* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_food_to_hpc = .8.* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_food = w_food_to_hpc';
-w_place_to_hpc = .4 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_place_to_hpc = .8 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
 w_hpc_to_place = w_place_to_hpc';
 
 global w_hpc_to_place_init;
 global w_place_to_hpc_init;
 
-w_hpc_to_hpc = 0.5 .* (rand(HPC_SIZE, HPC_SIZE) < INT_CONNECT);
+w_hpc_to_hpc = 0.4 .* (rand(HPC_SIZE, HPC_SIZE) < INT_CONNECT);
 w_hpc_to_place_init = w_hpc_to_place;
 w_place_to_hpc_init = w_place_to_hpc;
 
@@ -423,6 +423,8 @@ for j=1:duration
         
         hpc_learning = 0;
         pfc_learning = 1;
+        
+        
         for q = 1:current_time
             
             if is_testing
