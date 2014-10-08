@@ -14,13 +14,13 @@ global pfc_max;
 global hpc_max;
 global max_max_weight;
 
-alpha = 5;
+alpha = 2;
 alpha = sqrt(alpha);
 max = max_max_weight;
 
 if is_pfc
     eta = pfc_learning_rate;
-    pfc_decay = .45;
+    pfc_decay = 0;
     decay = pfc_decay;
     max = pfc_max;
 else
@@ -39,13 +39,18 @@ wy = input_weights';
 K = size(J);
 y_wx =  y*wx;
 
+weight_decay = 1 - decay;
+
+wx_bin = wx~=0;
+wy_bin = wy~=0;
+
 % output weights
 for k = 1:K
     j = J(k);
     i = I(k);
 
     delta_wx = eta*y(j) * (x(i) - y_wx(i));
-    wx(j,i) = (wx(j,i) + delta_wx) - (decay * delta_wx);
+    wx(j,i) = (wx(j,i) + delta_wx) * weight_decay;
 end
 
 % input weights
@@ -58,11 +63,17 @@ for k = 1:K
     i = I(k);
 
     delta_wy = eta*y(i) * (alpha*value*y_old(i) - y_wy(j));
-    wy(j,i) = (wy(j,i) + delta_wy) - (decay * delta_wy);
+    wy(j,i) = (wy(j,i) + delta_wy) * weight_decay;
 end
+
+wx = wx .* wx_bin;
+wy = wy .* wy_bin;
 
 wx(wx>20) = 20;
 wy(wy>20) = 20;
+
+wx(wx<-20) = -20;
+wy(wy<-20) = -20;
 
 end
 

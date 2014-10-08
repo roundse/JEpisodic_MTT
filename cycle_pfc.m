@@ -8,8 +8,10 @@ global pfc_weight_queue;
 global HVAL;
 global PFC_SIZE;
 
+global pfc_learning;
+global run_pfc;
+
 pfc_eye = eye(PFC_SIZE);
-w_pfc_to_pfc = zeros(PFC_SIZE);
 
 queue_pos = length(pfc_in_queue)+1;
 
@@ -21,9 +23,13 @@ if nargin < 3
         total_inputs = total_inputs + temp_input;
     end
     
-    food_pfc_out = activity(pfc_in, pfc_eye, total_inputs, w_pfc_to_pfc);
+    pfc_out = activity(pfc_in, pfc_eye, total_inputs, w_pfc_to_pfc);
+
+    if pfc_learning & run_pfc
+        w_pfc_to_pfc = oja(pfc_out, pfc_in, w_pfc_to_pfc, HVAL);
+    end
     
-    returnable = food_pfc_out;
+    returnable = pfc_out;
 
     for l = 1:length(w_pfc_to_pfc)
         w_pfc_to_pfc(l,l) = 0;

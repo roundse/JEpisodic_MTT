@@ -19,7 +19,7 @@ global PLACE_CELLS;
 FOOD_CELLS = 2;
 PLACE_CELLS = 14;
 
-EXT_CONNECT = .2;                   % Chance of connection = 20%
+EXT_CONNECT = .05;                   % Chance of connection = 20%
 INT_CONNECT = .2;
 
 global worm;
@@ -82,13 +82,16 @@ global pfc_in_queue;
 global pfc_weight_queue;
 global pfc_responses_to_place;
 
+global w_pfc_to_pfc;
+w_pfc_to_pfc = .08 .* ones(PFC_SIZE);
+
 pfc_in_queue = {};
 pfc_weight_queue = {};
 
-w_food_to_pfc = .01 .* ones(FOOD_CELLS, PFC_SIZE);
-w_pfc_to_food = w_food_to_pfc';
-w_place_to_pfc = .01.* ones(PLACE_CELLS, PFC_SIZE);
-w_pfc_to_place = w_place_to_pfc';
+w_food_to_pfc = .4 .* (rand(FOOD_CELLS, PFC_SIZE) < 1);
+w_pfc_to_food = - w_food_to_pfc';
+w_place_to_pfc = .4 .* (rand(PLACE_CELLS, PFC_SIZE) < 1);
+w_pfc_to_place = - w_place_to_pfc';
 
 
 global w_pfc_to_place_init;
@@ -103,6 +106,10 @@ w_pfc_to_place_prev = w_pfc_to_place;
 
 global pfc;
 pfc = zeros(cycles, PFC_SIZE);
+
+global w_pfc_to_hpc;
+
+w_pfc_to_hpc = .4 .* (rand(PFC_SIZE, HPC_SIZE) < EXT_CONNECT);
 
 pfc_responses_to_place = zeros(PLACE_CELLS, HPC_SIZE);
 % end PFC!
@@ -119,15 +126,15 @@ food_weight_queue = {};
 w_food_in = eye(FOOD_CELLS);
 w_food_to_food = zeros(FOOD_CELLS);
 
-w_food_to_hpc = .1 .* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
-w_hpc_to_food = - w_food_to_hpc';
-w_place_to_hpc = .1 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
-w_hpc_to_place =  - w_place_to_hpc';
+w_food_to_hpc = .65.* (rand(FOOD_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_hpc_to_food = w_food_to_hpc';
+w_place_to_hpc = .4 .* (rand(PLACE_CELLS, HPC_SIZE) < EXT_CONNECT);
+w_hpc_to_place = w_place_to_hpc';
 
 global w_hpc_to_place_init;
 global w_place_to_hpc_init;
 
-w_hpc_to_hpc = 0 .* (rand(HPC_SIZE, HPC_SIZE) < INT_CONNECT);
+w_hpc_to_hpc = 0.5 .* (rand(HPC_SIZE, HPC_SIZE) < INT_CONNECT);
 w_hpc_to_place_init = w_hpc_to_place;
 w_place_to_hpc_init = w_place_to_hpc;
 
@@ -373,7 +380,7 @@ for j=1:duration
             %             if is_testing
             %disp(['Currently in the caching phase...value is ', num2str(v)]);
             %             end
-            cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, 0);
+            cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
         end
         is_place_stim = 0;
         is_food_stim = 0;
@@ -404,19 +411,18 @@ for j=1:duration
         
         % TURN THIS ON/OF FOR LEARNING DURING TESTING/TRAINING
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        hpc_learning = 1;
-        pfc_learning = 1;
+        
         if ~is_testing
-            pfc_learning = 1;
             hpc_learning = 1;
+            pfc_learning = 1;
         end
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        
-        
+        hpc_learning = 0;
+        pfc_learning = 1;
         for q = 1:current_time
             
             if is_testing
@@ -434,14 +440,8 @@ for j=1:duration
             end
             
             for i = spots
-                if i < 8
-                    v = val(worm);
-                else
-                    v = val(peanut);
-                end
-                
-                %                 PVAL = v;
-                %                 HVAL = v;
+                PVAL = 0;
+                HVAL = 0;
                 %                   if is_testing
                 %disp(['Currently in the consolidating phase...value is ', ...
                 %    num2str(0), ', pfc learning is ', num2str(pfc_learning), ...
@@ -453,9 +453,7 @@ for j=1:duration
         end
         hpc_learning = 0;
         pfc_learning = 0;
-        
-        show_weights([prot_type, ' ', num2str(current_time)], is_disp_weights);
-        
+              
         m1 = mean(hpc_cumul_activity) / (current_time*14);
         global activity1;
         activity1 = mean(m1);
@@ -469,16 +467,17 @@ for j=1:duration
         %disp(['PFC Consolidate: ', num2str(activity2)]);
         hpc_cur_decay = 0;
         
-        if ~is_testing
-            pfc_learning = 1;
+        show_weights([prot_type, ' ', num2str(current_time)], is_disp_weights);
+
+       if ~is_testing
             hpc_learning = 1;
-            PVAL = v;
-            HVAL = v;
-            
+            pfc_learning = 1;
+
             reward_stim(value, cycles, is_replenish);
         end
     end
-    
+
+     
     if is_testing
         [checked_places, side_pref, avg_checks, first_checked] ...
             = place_slot_check;
@@ -529,35 +528,14 @@ for j=1:duration
         %type_order = [type_order(2) type_order(1)];
     end
     
-    %     if is_testing
-    %         hpc_learning = 1;
-    %         reward_stim(value, cycles, is_replenish);
-    %     end
+    global one_run_stop;
+
+    if one_run_stop
+       error('quiting script, since one_run_stop is turned on'); 
+    end
+    
 end
 
-    if ~is_testing
-        rein_dur = 2;
-
-        for t  = 1:rein_dur
-            for q = 1:2
-                pfc_learning = 1;
-                hpc_learning = 1;
-
-                spots = spot_shuffler(14);
-
-                for i = spots
-                    HVAL = 0;
-                    PVAL = 0;
-
-                    cycle_net( PLACE_SLOTS(i,:), place(i,:), cycles, 0);
-                end
-            end
-
-        end
-
-        pfc_learning = 0;
-        hpc_learning = 0;
-    end
 end
 
 function reward_stim(value, cycles, is_replenish)
@@ -585,6 +563,7 @@ end
 is_place_stim = 1;
 is_food_stim = 1;
 
+
 for q = 1:2
     % jay considers input given
     spots = spot_shuffler(14);
@@ -595,10 +574,16 @@ for q = 1:2
         else
             v = val(peanut);
         end
+        
+        HVAL = v;
+        PVAL = v;
+
         %disp(['Currently in recovery phase...value is ', num2str(v)]);
         cycle_net(PLACE_SLOTS(i,:), place(i,:), cycles, v);
     end
 end
+
+show_weights('affter recovery', 1);
 
 is_place_stim = 0;
 is_food_stim = 0;

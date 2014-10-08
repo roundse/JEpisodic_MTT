@@ -28,6 +28,8 @@ global lesion_pfc;
 global lesion_hpc;
 global is_testing;
 
+global w_pfc_to_hpc;
+
 global run_hpc;
 global run_pfc;
 
@@ -61,6 +63,8 @@ for j = 2:cycles
         cycle_hpc(hpc_out, w_place_to_hpc, place_out, value);
         cycle_hpc(hpc_out, w_food_to_hpc, food_out, value);
         cycle_hpc(hpc_out, w_food_to_hpc, food_stim, value);
+        
+        cycle_hpc(hpc_out, w_pfc_to_hpc, pfc_out, value);
     end
 
     if run_pfc

@@ -19,20 +19,31 @@ global lesion_hpc;
 lesion_pfc = 0;
 lesion_hpc = 0;
 
+global show_pfc_w;
+global show_hpc_w;
+
+debug = 0;
+
+show_pfc_w = debug;
+show_hpc_w = debug;
+
+global one_run_stop;
+one_run_stop = debug;
+
 global pfc_max;
 global hpc_max;
 global max_max_weight;
 
 pfc_max = 8;
-hpc_max = 8;
+hpc_max = 8; 
 max_max_weight = 20;
 
 INP_STR = 5;
 gain_step = .04;
 gain_max = 0.7;
 
-runs = 25;
-cycles = 9;
+runs = 30;
+cycles = 14;
 % cycles = 8;
 
 global REPL;
@@ -40,13 +51,13 @@ global PILF;
 global DEGR;
 
 %      Worm   Peanut
-REPL = [ 4.0   2.0];
+REPL = [ 6.0   2.0];
 PILF = [ 0.0   2.0];
-DEGR = [-4.0   2.0];
+DEGR = [-6.0   2.0];
 
 gain_oja = 0.7; 
-learning_rate = 0.1;
-pfc_learning_rate = 0.09;
+learning_rate = 0.6;
+pfc_learning_rate = 0.54;
 
 global pos;
 global DIR;
@@ -70,7 +81,7 @@ value_groups = {};
 
 multi_groups = {};
 
-is_disp_weights = 0;
+is_disp_weights = 1;
 % profile on
 for e=1:1
     v = 1;
