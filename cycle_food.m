@@ -23,12 +23,17 @@ function returnable = cycle_food(food_in, input_weights, input)
     global run_hpc;
     global run_pfc;
     
+    global place_food_learn;
+    
+    global w_food_to_place;
+    
     food_eye = eye(FOOD_CELLS);
       
     queue_pos = length(food_in_queue)+1;
     
     if nargin < 3
     	total_inputs = 0;
+        place_in = food_in{4};
         pfc_in = food_in{3};
         hpc_in = food_in{2};
         food_in = food_in{1};
@@ -40,6 +45,9 @@ function returnable = cycle_food(food_in, input_weights, input)
         food_out = activity(food_in, food_eye, total_inputs, ...
             w_food_to_food);
         
+        if place_food_learn
+            w_food_to_place = oja(food_out, place_in, w_food_to_place, HVAL);        
+        end
         
         returnable = food_out;
 

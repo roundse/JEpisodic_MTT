@@ -33,6 +33,9 @@ global w_pfc_to_hpc;
 global run_hpc;
 global run_pfc;
 
+global w_place_to_food;
+global w_food_to_place;
+
 run_hpc = ~(lesion_pfc & is_testing);
 run_pfc = ~(lesion_hpc & is_testing);
 
@@ -54,11 +57,14 @@ for j = 2:cycles
     cycle_place(place_out, w_hpc_to_place, hpc_out);
     cycle_place(place_out, w_pfc_to_place, pfc_out);
 
+    cycle_place(place_out, w_food_to_place, food_out);
+
     cycle_food(food_out, f_eye, food_stim);
-    
+       
     cycle_food(food_out, w_hpc_to_food, hpc_out);
     cycle_food(food_out, w_pfc_to_food, pfc_out);
-
+    cycle_food(food_out, w_place_to_food, place_out);
+    
     if run_hpc
         cycle_hpc(hpc_out, w_place_to_hpc, place_out, value);
         cycle_hpc(hpc_out, w_food_to_hpc, food_out, value);
@@ -78,10 +84,8 @@ for j = 2:cycles
     if run_hpc
         hpc(j,:) = cycle_hpc(hpc_out, is_learning);
     end
-    place_region(j,:) = cycle_place({place_region(j-1,:), hpc(j,:), ...
-                        pfc(j,:)}, is_learning);
-    food(j,:) = cycle_food({food(j-1,:), hpc(j,:), ...
-                pfc(j,:)}, is_learning);
+    place_region(j,:) = cycle_place({place_region(j-1,:), hpc(j,:), pfc(j,:), food(j-1,:)}, is_learning);
+    food(j,:) = cycle_food({food(j-1,:), hpc(j,:), pfc(j,:), place_region(j,:)}, is_learning);
 end
 
 final_place_activity = mean(place_region(6:cycles,:));

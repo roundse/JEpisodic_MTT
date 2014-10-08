@@ -82,6 +82,9 @@ global pfc_in_queue;
 global pfc_weight_queue;
 global pfc_responses_to_place;
 
+global place_food_learn;
+place_food_learn = 0;
+
 global w_pfc_to_pfc;
 w_pfc_to_pfc = .8 .* ones(PFC_SIZE);
 
@@ -93,6 +96,11 @@ w_pfc_to_food = - w_food_to_pfc';
 w_place_to_pfc = .6 .* (rand(PLACE_CELLS, PFC_SIZE) < 1);
 w_pfc_to_place = - w_place_to_pfc';
 
+global w_place_to_food;
+global w_food_to_place;
+
+w_place_to_food = 0.5 .* (rand(PLACE_CELLS, FOOD_CELLS) < 0.6);
+w_food_to_place = 0.5 .* (rand(FOOD_CELLS, PLACE_CELLS) < 0.6);
 
 global w_pfc_to_place_init;
 global w_place_to_pfc_init;
@@ -304,6 +312,8 @@ global pfc_average;
 global hpc;
 global pfc;
 
+global place_food_learn;
+
 hpc_average = hpc(1,:);
 pfc_average = pfc(1,:);
 
@@ -423,6 +433,7 @@ for j=1:duration
         
         hpc_learning = 0;
         pfc_learning = 1;
+        place_food_learn = 1;
         
         
         for q = 1:current_time
@@ -455,6 +466,7 @@ for j=1:duration
         end
         hpc_learning = 0;
         pfc_learning = 0;
+        place_food_learn = 0;
               
         m1 = mean(hpc_cumul_activity) / (current_time*14);
         global activity1;
@@ -474,6 +486,7 @@ for j=1:duration
        if ~is_testing
             hpc_learning = 1;
             pfc_learning = 1;
+            place_food_learn = 1;
 
             reward_stim(value, cycles, is_replenish);
         end
@@ -549,6 +562,7 @@ global pfc_learning;
 global hpc_learning;
 global HVAL;
 global PVAL;
+global place_food_learn;
 
 %pfc_learning = 1;
 global worm;
@@ -591,5 +605,5 @@ is_place_stim = 0;
 is_food_stim = 0;
 pfc_learning = 0;
 hpc_learning = 0;
-
+place_food_learn = 0;
 end

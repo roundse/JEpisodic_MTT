@@ -20,11 +20,15 @@ function returnable = cycle_place(place_in, input_weights, input)
     global pfc_learning;
     global is_pfc;
     decay = .004;
+    
+    global place_food_learn;
 
     global REPL;
 
     global run_hpc;
     global run_pfc;
+    
+    global w_place_to_food;
     
     place_eye = eye(PLACE_CELLS);
     w_place_to_place = zeros(PLACE_CELLS);
@@ -33,6 +37,7 @@ function returnable = cycle_place(place_in, input_weights, input)
 
     if nargin < 3
         total_inputs = 0;
+        food_in = place_in{4};
         pfc_in = place_in{3};
         hpc_in = place_in{2};
         place_in = place_in{1};
@@ -44,6 +49,9 @@ function returnable = cycle_place(place_in, input_weights, input)
         place_out = activity(place_in, place_eye, total_inputs, ...
             w_place_to_place);
 
+        if place_food_learn
+            w_place_to_food = oja(place_out, food_in, w_place_to_food, HVAL);
+        end
         returnable = place_out;
 
         if hpc_learning & run_hpc                       
